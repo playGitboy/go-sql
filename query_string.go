@@ -113,6 +113,6 @@ func (p QueryString) after(iWord int) (atAfter string) {
 	if atAfter == "" {
 		atAfter = p.query[iAfter:]
 	}
-
+	
 	return
 }
