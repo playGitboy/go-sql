@@ -104,7 +104,7 @@ func (p QueryString) after(iWord int) (atAfter string) {
 		}
 		
 		// 注意"."号作用，如myDB.mylTable
-		if (unicode.IsSpace(r) || (unicode.IsPunct(r) && r != '.')) && iAfter > 0 {
+		if (unicode.IsSpace(r) || (unicode.IsPunct(r) && r != '.' && r != '_')) && iAfter > 0 {
 			atAfter = p.query[iAfter:i]
 			break
 		}
