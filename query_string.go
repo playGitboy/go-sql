@@ -54,14 +54,15 @@ func (p QueryString) TableNames() (names []string) {
 	}
 
 	names = append(names, p.tableNamesByFROM()...)
-	names = append(names, p.AfterAll("join")...)
+	// 考虑join后跟子查询的特殊情况如join (select...
+	names = append(names, p.AfterAll("join[^(]")...)
 
 	return
 }
 
 func (p QueryString) tableNamesByFROM() (names []string) {
-	indices := regexp.MustCompile("from(.*?)(left|inner|right|outer|full)|from(.*?)join|from(.*?)where|from(.*?);|from(.*?)$").
-		FindAllStringIndex(p.lowered, -1)
+	// 考虑from后跟子查询、或extract from等特殊情况
+	indices := regexp.MustCompile("from([^()]*?)(left|inner|right|outer|full)|from([^()]*?)join|from([^()]*?)where|from([^()]*?);|from([^()]*?)$").FindAllStringIndex(p.lowered, -1)
 
 	for _, index := range indices {
 		fromStmt := p.lowered[index[0]:index[1]]
@@ -101,8 +102,9 @@ func (p QueryString) after(iWord int) (atAfter string) {
 		if unicode.IsLetter(r) && iAfter <= 0 {
 			iAfter = i
 		}
-
-		if (unicode.IsSpace(r) || unicode.IsPunct(r)) && iAfter > 0 {
+		
+		// 注意"."号作用，如myDB.mylTable
+		if (unicode.IsSpace(r) || (unicode.IsPunct(r) && r != '.')) && iAfter > 0 {
 			atAfter = p.query[iAfter:i]
 			break
 		}
