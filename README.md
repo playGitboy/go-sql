@@ -1,6 +1,6 @@
 # SQLSTR
 
-主要用于从SQL中解析表名
+轻量级，用于从SQL中解析出所有表名
 
 ## Examples
 
