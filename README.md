@@ -31,15 +31,29 @@ fmt.Println(obsecured)
 ### Get Table Names
 
 ```go
-queryString := sqlstr.NewQueryString(`SELECT column_name(s)
-FROM table1
-LEFT JOIN table2
-ON table1.column_name = table2.column_name;`)
+queryString := sqlstr.NewQueryString(`SELECT a.mc, a.hm
+FROM (
+	SELECT n.dj, coalesce(n.shx, n.sr) AS hx, h.HYMC
+	FROM DJ.V_MC n, HX_QG.V_DM_GY_HY h
+	WHERE n.KQCBZ = 'N'
+		AND n.yx = 'Y'
+		AND n.KZ_DM < '1140'
+		AND n.DM = h.DM
+) a	JOIN (
+		SELECT c.dj, SUM(CASE WHEN c.nd = '2021' THEN c.jsyj ELSE 0	END) AS xs21
+		FROM (
+			SELECT s.dj, s.jsyj, extract(year FROM s.SKSSQQ) AS nd
+			FROM HX_SB.v_SB s
+			WHERE S.SKSQ >= DATE '2016-01-01'
+				AND S.SKSQ <= DATE '2021-06-30'
+		) c
+		GROUP BY c.dj
+	) b ON a.dj = b.dj;`)
 
 tableNames := queryString.TableNames()
 
 fmt.Println(tableNames)
 
 // Output:
-// [table1 table2]
+// [DJ.V_MC  HX_QG.V_DM_GY_HY  HX_SB.v_SB]
 ```
