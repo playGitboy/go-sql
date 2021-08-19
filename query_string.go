@@ -11,6 +11,26 @@ type QueryString struct {
 	lowered string
 }
 
+// 用于结果去重去空
+func RemoveRepeatedAndEmpty(arr []string) (newArr []string) {
+	newArr = make([]string, 0)
+	for i := 0; i < len(arr); i++ {
+		repeat := false
+		if len(arr[i]) > 0 {
+			for j := i + 1; j < len(arr); j++ {
+				if arr[i] == arr[j] {
+					repeat = true
+					break
+				}
+			}
+			if !repeat {
+				newArr = append(newArr, arr[i])
+			}
+		}
+	}
+	return newArr
+}
+
 func NewQueryString(query string) *QueryString {
 	query = Clean(query)
 	return &QueryString{
@@ -56,11 +76,12 @@ func (p QueryString) TableNames() (names []string) {
 	names = append(names, p.tableNamesByFROM()...)
 	// 考虑join后跟子查询的特殊情况如join (select...
 	names = append(names, p.AfterAll("join[^(]")...)
-
+	names = RemoveRepeatedAndEmpty(names)
 	return
 }
 
 func (p QueryString) tableNamesByFROM() (names []string) {
+	//indices := regexp.MustCompile("from(.*?)(left|inner|right|outer|full)|from(.*?)join|from(.*?)where|from(.*?);|from(.*?)$").FindAllStringIndex(p.lowered, -1)
 	// 考虑from后跟子查询、或extract from等特殊情况
 	indices := regexp.MustCompile("from([^()]*?)(left|inner|right|outer|full)|from([^()]*?)join|from([^()]*?)where|from([^()]*?);|from([^()]*?)$").FindAllStringIndex(p.lowered, -1)
 
@@ -102,17 +123,21 @@ func (p QueryString) after(iWord int) (atAfter string) {
 		if unicode.IsLetter(r) && iAfter <= 0 {
 			iAfter = i
 		}
-		
-		// 如myDB_dm.myTable_dm
+
 		if (unicode.IsSpace(r) || (unicode.IsPunct(r) && r != '.' && r != '_')) && iAfter > 0 {
 			atAfter = p.query[iAfter:i]
-			break
+			if strings.ToLower(atAfter) == "select" {
+				atAfter = ""
+				return
+			} else {
+				break
+			}
 		}
 	}
 
 	if atAfter == "" {
 		atAfter = p.query[iAfter:]
 	}
-	
+
 	return
 }
