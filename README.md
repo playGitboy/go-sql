@@ -1,6 +1,6 @@
 # SQLSTR
 
-String manipulation/helper for SQL Query.
+主要用于从SQL中解析表名
 
 ## Examples
 
@@ -43,7 +43,3 @@ fmt.Println(tableNames)
 // Output:
 // [table1 table2]
 ```
-
-## Author 
-
-iman.tung@gmail.com
