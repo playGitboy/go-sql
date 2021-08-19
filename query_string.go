@@ -103,7 +103,7 @@ func (p QueryString) after(iWord int) (atAfter string) {
 			iAfter = i
 		}
 		
-		// 注意"."号作用，如myDB.mylTable
+		// 如myDB_dm.myTable_dm
 		if (unicode.IsSpace(r) || (unicode.IsPunct(r) && r != '.' && r != '_')) && iAfter > 0 {
 			atAfter = p.query[iAfter:i]
 			break
