@@ -3,7 +3,7 @@ package sqlstr_test
 import (
 	"testing"
 
-	"github.com/imantung/sqlstr"
+	"github.com/playGitboy/sqlstr"
 	"github.com/stretchr/testify/require"
 )
 
